@@ -27,13 +27,44 @@ import org.opencv.objdetect.*;
 
 import com.sun.glass.events.MouseEvent;
 
+/* USAGE
+	Run this java program, using this class in the manifest
+	An overlay should popup on the top of your primary display
+	The Start button will start capturing the screen continuously
+	and will automatically click on the circles with the given color
+	in the given area.
+	Exit button will exit the program.
+	Also for false-safe operation pressing ESC anytime will exit the
+	program. (You have to use keyboardhook for this)
+	If pressing ESC doesn't work then I recommend pressing CTRL+SHIFT+DEL
+	opening up a task manager and killing the java.exe.
+*/
+
+/* OPERATION
+    While running
+	Capture screen area specified by x, y, w (width), h (height)
+	Filter for the given color (turqoise in this case)
+	Find circles
+	Move the cursor to a circle
+	Press on it
+	Release left mouse button
+	And repeat.
+
+NOTES:
+	The values below are calibrated for streamlab's sequence game.
+	If you want to use it for a different game then change the r,g,b and threshold values
+	Also the below x,y,w,h values are for an 1080p screen watching Twitch in Chrome in normal mode (not theather/fullscreen)
+	
+*/
+
+//Comment out if you don't want or can't use keyboardhook
 import de.ksquared.system.keyboard.GlobalKeyListener;
 import de.ksquared.system.keyboard.KeyEvent;
 import de.ksquared.system.keyboard.KeyListener;
 
 public class Vision implements Runnable {
 	
-	//Keyboard hook
+	//Comment out if you don't want or can't use keyboardhook
 	static GlobalKeyListener listener = new GlobalKeyListener();
 
 	static JFrame frame = new JFrame("Sequence");
@@ -109,6 +140,7 @@ public class Vision implements Runnable {
          * Attaches a listener to the keyboard so that you can stop the program
          * without requiring special intervention like ctrl+alt+del
          */
+	//Comment out if you don't want or can't use keyboardhook
         listener.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent event) {
@@ -140,25 +172,19 @@ public class Vision implements Runnable {
 	    }
 	    return mat;
 	}
-
-	/**
-	 * Screen capturing thread.
-	 * Working principle:
-	 * 		- Take a screenshot
-	 * 		- Filter out the picture for the given color
-	 * 		- Smoothen out edges
-	 * 		- Find 
-	 */
+	
 	@Override
 	public void run() {
 		System.out.println("Started polling.");
 		
 		while(running) {
+			//Take a picture
 			BufferedImage img = robot.createScreenCapture(cap);
 	        
 	        Mat screen = bufferedImageToMat(img);
 	        Mat filter = new Mat();
 	        
+		//Filter the specific color
 	        Core.inRange(screen, new Scalar(b-threshold, g-threshold, r-threshold), new Scalar(b+threshold, g+threshold, r+threshold), filter);
 	        Imgproc.GaussianBlur(filter, filter, new Size(9, 9), 2, 2);
 	        /*
@@ -168,6 +194,7 @@ public class Vision implements Runnable {
 	         * 0 - min radius
 	         * 0 - max radius
 	         */
+		//Find circles on the image
 	        Mat circles = new Mat();
 	        Imgproc.HoughCircles(filter, circles, Imgproc.HOUGH_GRADIENT, 1, filter.cols() / 16, 255, 40, 0, 0);
 	        
@@ -175,12 +202,10 @@ public class Vision implements Runnable {
 	            double[] params = circles.get(0, i);
 	            
 	            try {
+			//Move the cursor to the given circle and click on it
 	            	robot.mouseMove(x+(int)Math.round(params[0]), y+(int)Math.round(params[1]));
-	            	Thread.sleep(1);
 		            robot.mousePress(InputEvent.BUTTON1_MASK);
-		            Thread.sleep(1);
 		            robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-					Thread.sleep(1);
 				} catch (InterruptedException e) {
 					
 				}
