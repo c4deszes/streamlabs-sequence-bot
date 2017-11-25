@@ -1,0 +1,24 @@
+var dispatchMouseEvent = function(target, var_args) {
+  var e = document.createEvent("MouseEvents");
+  e.initEvent.apply(e, Array.prototype.slice.call(arguments, 1));
+  target.dispatchEvent(e);
+};
+
+function init() {
+  while(true) {
+    step();
+  }
+}
+
+var game = document.getElementsByClassName("toasts")[0];
+
+function step() {
+  for(var i=0;i<game.childNodes.length;i++) {
+    console.log("Hello");
+    //if(game.childNodes[i].className == "target animated fadeIn before-background-primary") {
+      //dispatchMouseEvent(document.getElementsByClassName("seq-b")[0], 'click', true, true);
+    //}
+  }
+}
+
+init();
