@@ -3,12 +3,18 @@ var dispatchMouseEvent = function(target, var_args) {
   e.initEvent.apply(e, Array.prototype.slice.call(arguments, 1));
   target.dispatchEvent(e);
 };
-var game = document.getElementById('sequence-minigame').childNodes[2].childNodes[0];
 function step() {
+  try {
+  var game = document.getElementById('sequence-minigame').childNodes[2].childNodes[0];
   for(var i=0;i<game.childNodes.length;i++) {
     if(game.childNodes[i].className=="target animated fadeIn before-background-primary") {
       dispatchMouseEvent(game.childNodes[i], 'click', true, true);
+      console.log('msg');
     }
+  }
+  }
+  catch(exception) {
+    console.log('error');
   }
   setTimeout(step, 100);
 }
