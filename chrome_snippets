@@ -3,22 +3,13 @@ var dispatchMouseEvent = function(target, var_args) {
   e.initEvent.apply(e, Array.prototype.slice.call(arguments, 1));
   target.dispatchEvent(e);
 };
-
-function init() {
-  while(true) {
-    step();
-  }
-}
-
-var game = document.getElementsByClassName("toasts")[0];
-
+var game = document.getElementsByClassName("game-bg").childNodes[1];
 function step() {
   for(var i=0;i<game.childNodes.length;i++) {
-    console.log("Hello");
-    //if(game.childNodes[i].className == "target animated fadeIn before-background-primary") {
-      //dispatchMouseEvent(document.getElementsByClassName("seq-b")[0], 'click', true, true);
-    //}
+    if(game.childNodes[i].className=="target animated fadeIn before-background-primary") {
+      dispatchMouseEvent(game.childNodes[i], 'click', true, true);
+    }
   }
+  setTimeout(step, 100);
 }
-
-init();
+step();
